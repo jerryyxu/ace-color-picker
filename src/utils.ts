@@ -1,22 +1,11 @@
-export function getOffset(el: Element | null): [number, number] {
-  const offset: [number, number] = [0, 0];
-
-  while (el && el instanceof HTMLElement) {
-    offset[0] += el.offsetLeft;
-    offset[1] += el.offsetTop;
-
-    el = el.offsetParent;
-  }
-
-  return offset;
-}
-
+// stopPropagation && preventDefault
 export function endEvent(e: Event | React.MouseEvent) {
   e.stopPropagation();
   e.preventDefault();
 }
 
-export function throttle(fn: Function) {
+// 使用 requestAnimationFrame 进行节流
+export function requestAF(fn: Function) {
   let running = false;
 
   return function(e: MouseEvent) {
@@ -31,18 +20,15 @@ export function throttle(fn: Function) {
   };
 }
 
-export function limitRange(v: number, min: number, max: number): number {
+// 限制范围
+export function minmax(v: number, min: number, max: number): number {
   if (v < min) {
     return min;
   }
 
   if (v > max) {
-    return max - 1;
+    return max;
   }
 
   return v;
-}
-
-export function toFixed(v: number, fractionDigits: number | undefined): number {
-  return Number(v.toFixed(fractionDigits));
 }
