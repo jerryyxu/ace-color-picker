@@ -1,12 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react';
+import {
+  getOffset,
+  endEvent,
+  throttle,
+  limitRange,
+  toFixed,
+} from '../../utils';
 
 import './index.css';
 
 function drawCanvas(canvas: HTMLCanvasElement) {
   const ctx = canvas.getContext('2d');
   const { height, width } = canvas;
-
-  console.log(height, width);
 
   if (ctx) {
     const lg = ctx.createLinearGradient(0, height, width, 0);
@@ -20,109 +25,51 @@ function drawCanvas(canvas: HTMLCanvasElement) {
   }
 }
 
-function throttle(fn: Function) {
-  let running = false;
-
-  return function(e: MouseEvent) {
-    if (!running) {
-      running = true;
-
-      window.requestAnimationFrame(() => {
-        fn(e);
-        running = false;
-      });
-    }
-  };
-}
-
-function limitRange(v: number, min: number, max: number): number {
-  if (v < min) {
-    return min;
-  }
-
-  if (v > max) {
-    return max - 1;
-  }
-  return v;
-}
-
-function endEvent(e: Event) {
-  e.stopPropagation();
-  e.preventDefault();
-}
-
 export default function ColorPanel(prop: ColorPanelPorps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
   const movableRef = useRef<boolean>(false);
-  const clientRef = useRef<[number, number] | null>(null);
-
   const [pos, setPos] = useState<[number, number] | null>(null);
-  const posRef = useRef<[number, number] | null>(pos);
 
   const [color, setColor] = useState<string>('');
-
-  // utils
-
-  function getPosStyle() {
-    if (pos && panelRef.current) {
-      const { offsetWidth, offsetHeight } = panelRef.current;
-
-      return {
-        left: limitRange(pos[0], 0, offsetWidth),
-        top: limitRange(pos[1], 0, offsetHeight),
-      };
-    }
-
-    return { left: 0, top: 0 };
-  }
 
   // event handle
 
   function handleStartMove(e: React.MouseEvent) {
     movableRef.current = true;
 
-    setPos((posRef.current = [e.nativeEvent.offsetX, e.nativeEvent.offsetY]));
+    endEvent(e);
   }
 
   function handleMouseUp(e: MouseEvent) {
     movableRef.current = false;
-    e.stopPropagation();
 
     endEvent(e);
   }
 
   function handleMouseDown(e: MouseEvent) {
-    clientRef.current = [e.clientX, e.clientY];
-
     endEvent(e);
   }
 
   const handleMouseMove = throttle((e: MouseEvent) => {
-    if (movableRef.current && clientRef.current && posRef.current) {
-      const [x = 0, y = 0] = clientRef.current;
-      const [left, top] = posRef.current;
+    if (movableRef.current) {
+      const [x, y] = [e.clientX, e.clientY];
+      const react = panelRef.current?.getBoundingClientRect();
 
-      clientRef.current = [e.clientX, e.clientY];
-
-      const newLeft = left + (e.clientX - x);
-      const newTop = top + (e.clientY - y);
-
-      posRef.current = [newLeft, newTop];
-      setPos([newLeft, newTop]);
+      if (react) {
+        setPos([
+          toFixed(limitRange(x - react.x, 0, react.width), 2),
+          toFixed(limitRange(y - react.y, 0, react.height), 2),
+        ]);
+      }
     }
-
     endEvent(e);
   });
 
   // useEffect
 
   useEffect(() => {
-    if (canvasRef.current) {
-      drawCanvas(canvasRef.current);
-    }
-
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mousedown', handleMouseDown);
     window.addEventListener('mouseup', handleMouseUp);
@@ -135,18 +82,23 @@ export default function ColorPanel(prop: ColorPanelPorps) {
   }, []);
 
   useEffect(() => {
+    if (canvasRef.current) {
+      drawCanvas(canvasRef.current);
+    }
+  }, [canvasRef, panelRef]);
+
+  useEffect(() => {
     if (panelRef.current && canvasRef.current && pos) {
       const ctx = canvasRef.current.getContext('2d');
+      const react = panelRef.current?.getBoundingClientRect();
 
-      const { left, top } = getPosStyle();
-
-      const imgData = ctx?.getImageData(left, top, 1, 1);
+      const [x, y] = [
+        pos[0] * 2,
+        (pos[1] > react.width ? pos[1] - 1 : pos[1]) * 2,
+      ];
+      const imgData = ctx?.getImageData(x, y, 1, 1);
 
       imgData && setColor(`rgba(${imgData.data})`);
-
-      // if (imgData?.data[3] === 0) {
-      //   debugger;
-      // }
 
       prop?.onChange?.call(null, color);
     }
@@ -160,15 +112,16 @@ export default function ColorPanel(prop: ColorPanelPorps) {
       onMouseDown={handleStartMove}
     >
       <canvas
-        width="200px"
-        height="200px"
+        width="400px"
+        height="400px"
         ref={canvasRef}
         className="picker-panel__canvas"
       ></canvas>
       {pos ? (
         <div
           style={{
-            ...getPosStyle(),
+            left: pos[0],
+            top: pos[1],
             background: color,
           }}
           className="picker-panel__point"

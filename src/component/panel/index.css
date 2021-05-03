@@ -16,7 +16,6 @@
   border-color: white;
   background: #efefef;
   transform: translate(-50%, -50%);
-  pointer-events: none;
   transition: left 50ms, top 50ms;
 }
 
