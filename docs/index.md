@@ -1,21 +1,18 @@
 ## ace-color-picker
 
 ```tsx
-import React from 'react';
-import { ColorPanel } from 'ace-color-picker';
+import React, { useState } from 'react';
+import { ColorSaturationPicker, ColorHuePicker } from 'ace-color-picker';
 
 export default function() {
-  return (
-    <div>
-      <ColorPanel title="First Demo" />
+  const [color, setColor] = useState('');
 
-      <div
-        id="demo"
-        style={{
-          width: 200,
-          height: 200,
-        }}
-      ></div>
+  return (
+    <div
+      style={{ position: 'relative', width: 200, display: 'grid', rowGap: 20 }}
+    >
+      <ColorSaturationPicker />
+      <ColorHuePicker />
     </div>
   );
 }

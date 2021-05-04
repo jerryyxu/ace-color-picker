@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import tinycolor from 'tinycolor2';
-import { endEvent, requestAF, minmax } from '../../utils';
+import { minmax } from '../../utils';
 
-import ControlBall from '../control-ball';
+import Pointer from '../pointer';
 
 import './index.css';
 
@@ -63,7 +63,7 @@ function computePosition(hsla: Color, pickerContainer: HTMLElement) {
 export default function ColorSaturationPicker(prop: ColorPanelPorps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
-  const ballRef = useRef<any>(null);
+  const pointerRef = useRef<any>(null);
 
   const [color, setColor] = useState<Color>({
     h: 289,
@@ -92,13 +92,13 @@ export default function ColorSaturationPicker(prop: ColorPanelPorps) {
 
     setColor({
       ...color,
-      s: Math.round((left * 100) / width),
-      v: Math.round(((height - top) * 100) / height),
+      s: Math.round((left * 100) / width) / 100,
+      v: Math.round(((height - top) * 100) / height) / 100,
     });
   }
 
   function handleMouseDown(e: React.MouseEvent) {
-    ballRef.current && ballRef.current.handleMouseDown(e);
+    pointerRef.current && pointerRef.current.handleMouseDown(e);
   }
 
   useEffect(() => {
@@ -111,21 +111,19 @@ export default function ColorSaturationPicker(prop: ColorPanelPorps) {
     }
   }, []);
 
+  // ColorSaturationPicker
+
   return (
-    <div
-      ref={panelRef}
-      className="picker-panel"
-      style={{ width: 200, height: 200 }}
-    >
+    <div ref={panelRef} className="color-saturation-picker">
       <canvas
         onMouseDown={handleMouseDown}
         ref={canvasRef}
-        className="picker-panel__canvas"
+        className="picker__canvas"
       ></canvas>
 
       {position ? (
-        <ControlBall
-          ref={ballRef}
+        <Pointer
+          ref={pointerRef}
           onPositionChange={handlePositionChange}
           style={{
             left: position.left,

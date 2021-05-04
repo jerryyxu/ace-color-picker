@@ -9,7 +9,7 @@ import { requestAF, endEvent } from '../../utils';
 
 import './index.css';
 
-function ControlBall(props: ControlBallProps, ref: React.Ref<any>) {
+function Pointer(props: PointerProps, ref: React.Ref<any>) {
   const { onPositionChange, ...restProps } = props;
 
   function unbindEventListeners() {
@@ -52,16 +52,16 @@ function ControlBall(props: ControlBallProps, ref: React.Ref<any>) {
   return (
     <div
       onMouseDown={handleMouseDown}
-      className="color-control-ball"
+      className="color-pointer"
       {...restProps}
     ></div>
   );
 }
 
-interface ControlBallProps {
+interface PointerProps {
   style?: Object;
   onPositionChange?: (e: MouseEvent | React.MouseEvent) => void;
   ref?: React.Ref<any>;
 }
 
-export default forwardRef(ControlBall);
+export default forwardRef(Pointer);

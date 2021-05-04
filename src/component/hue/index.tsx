@@ -1,13 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-import ControlBall from '../control-ball';
+import Pointer from '../pointer';
 
 import './index.css';
 
 // 色相选择器
 export default function ColorHuePicker(props: ColorHuePickerProps) {
   const pickerRef = useRef<HTMLDivElement>(null);
-  const ballRef = useRef<any>(null);
+  const pointerRef = useRef<any>(null);
 
   const [left, setLeft] = useState<number>(0);
   const [hue, setHue] = useState<number>(0);
@@ -32,8 +32,8 @@ export default function ColorHuePicker(props: ColorHuePickerProps) {
   }
 
   function handleMouseDown(e: React.MouseEvent) {
-    if (ballRef.current) {
-      ballRef.current.handleMouseDown(e);
+    if (pointerRef.current) {
+      pointerRef.current.handleMouseDown(e);
     }
   }
 
@@ -43,8 +43,8 @@ export default function ColorHuePicker(props: ColorHuePickerProps) {
       ref={pickerRef}
       className="color-hue-picker"
     >
-      <ControlBall
-        ref={ballRef}
+      <Pointer
+        ref={pointerRef}
         onPositionChange={handlePositionChange}
         style={{
           left,
