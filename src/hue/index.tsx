@@ -1,59 +1,39 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
+import tinycolor, { ColorFormats } from 'tinycolor2';
 
-import Pointer from '../components/pointer';
+import SliderControl from '../components/slider-control';
 
 import './index.css';
 
 // 色相选择器
-export default function ColorHuePicker(props: ColorHuePickerProps) {
-  const pickerRef = useRef<HTMLDivElement>(null);
-  const pointerRef = useRef<any>(null);
+export default function ColorHuePicker({
+  onChange,
+  defaultValue = { h: 0, s: 1, v: 1, a: 1 },
+}: ColorHuePickerProps) {
+  const [color, setColor] = useState<ColorFormats.HSVA>(
+    tinycolor(defaultValue).toHsv(),
+  );
 
-  const [left, setLeft] = useState<number>(0);
-  const [hue, setHue] = useState<number>(0);
+  function handlePositionChange(v: number) {
+    const h = Math.round((360 * v) / 100);
 
-  function handlePositionChange(e: MouseEvent | React.MouseEvent) {
-    const react = pickerRef.current?.getBoundingClientRect();
-
-    if (react) {
-      let left = e.clientX - react.x;
-      const { width } = react;
-
-      if (left < 0) {
-        left = 0;
-      } else if (left > width) {
-        left = width;
-      }
-
-      setHue(Math.round((360 * left) / width));
-
-      setLeft(left);
-    }
-  }
-
-  function handleMouseDown(e: React.MouseEvent) {
-    if (pointerRef.current) {
-      pointerRef.current.handleMouseDown(e);
-    }
+    setColor({
+      ...color,
+      h,
+    });
+    onChange && onChange(h);
   }
 
   return (
-    <div
-      onMouseDown={handleMouseDown}
-      ref={pickerRef}
+    <SliderControl
       className="color-hue-picker"
-    >
-      <Pointer
-        ref={pointerRef}
-        onPositionChange={handlePositionChange}
-        style={{
-          left,
-          transform: 'translateX(-50%)',
-          background: `hsl(${hue}deg 100% 50%)`,
-        }}
-      />
-    </div>
+      onChange={handlePositionChange}
+      sliderStyle={{ background: tinycolor(color).toRgbString() }}
+    />
   );
 }
 
-export type ColorHuePickerProps = {};
+export type ColorHuePickerProps = {
+  onChange?: (v: number) => void;
+  defaultValue?: tinycolor.ColorInput;
+};

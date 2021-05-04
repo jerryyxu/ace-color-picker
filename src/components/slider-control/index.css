@@ -1,0 +1,7 @@
+.slider-control {
+  position: relative;
+  width: 100%;
+  height: 12px;
+  background: #efefef;
+  border-radius: 6px;
+}

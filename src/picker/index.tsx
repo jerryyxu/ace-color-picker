@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import ColorHuePicker from '../hue';
+import ColorAlphaPicker from '../alpha';
 import ColorSaturationPicker from '../saturation';
 import tinycolor from 'tinycolor2';
 
@@ -14,6 +15,7 @@ export default function ColorPicker(props: ColorPickerProps) {
     <div className="ace-color-picker">
       <ColorSaturationPicker />
       <ColorHuePicker />
+      <ColorAlphaPicker />
     </div>
   );
 }

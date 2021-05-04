@@ -1,6 +1,6 @@
 import React, {
   useEffect,
-  useRef,
+  useState,
   forwardRef,
   useImperativeHandle,
 } from 'react';
@@ -9,8 +9,9 @@ import { requestAF, endEvent } from '../../utils';
 
 import './index.css';
 
-function Pointer(props: PointerProps, ref: React.Ref<any>) {
-  const { onPositionChange, ...restProps } = props;
+function Slider(props: SliderProps, ref: React.Ref<any>) {
+  const { onPositionChange, style, ...restProps } = props;
+  const [willChange, setWillChange] = useState<boolean>(false);
 
   function unbindEventListeners() {
     window.removeEventListener('mousemove', handleMouseMove);
@@ -23,12 +24,15 @@ function Pointer(props: PointerProps, ref: React.Ref<any>) {
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseup', handleMouseUp);
 
+    setWillChange(true);
     onPositionChange && onPositionChange(e);
+
     endEvent(e);
   }
 
   function handleMouseUp(e: MouseEvent) {
     unbindEventListeners();
+    setWillChange(false);
 
     endEvent(e);
   }
@@ -42,6 +46,7 @@ function Pointer(props: PointerProps, ref: React.Ref<any>) {
   useEffect(() => {
     return () => {
       unbindEventListeners();
+      setWillChange(false);
     };
   }, []);
 
@@ -52,16 +57,17 @@ function Pointer(props: PointerProps, ref: React.Ref<any>) {
   return (
     <div
       onMouseDown={handleMouseDown}
-      className="color-pointer"
+      className="color-slider"
+      style={{ ...style, willChange: willChange ? 'left, right' : undefined }}
       {...restProps}
     ></div>
   );
 }
 
-interface PointerProps {
+interface SliderProps {
   style?: Object;
   onPositionChange?: (e: MouseEvent | React.MouseEvent) => void;
   ref?: React.Ref<any>;
 }
 
-export default forwardRef(Pointer);
+export default forwardRef(Slider);

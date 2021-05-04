@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import tinycolor from 'tinycolor2';
 import { minmax } from '../utils';
 
-import Pointer from '../components/pointer';
+import Slider from '../components/slider';
 
 import './index.css';
 
@@ -63,7 +63,7 @@ function computePosition(hsla: Color, pickerContainer: HTMLElement) {
 export default function ColorSaturationPicker(prop: ColorPanelPorps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
-  const pointerRef = useRef<any>(null);
+  const sliderRef = useRef<any>(null);
 
   const [color, setColor] = useState<Color>({
     h: 289,
@@ -98,7 +98,7 @@ export default function ColorSaturationPicker(prop: ColorPanelPorps) {
   }
 
   function handleMouseDown(e: React.MouseEvent) {
-    pointerRef.current && pointerRef.current.handleMouseDown(e);
+    sliderRef.current.handleMouseDown(e);
   }
 
   useEffect(() => {
@@ -111,8 +111,6 @@ export default function ColorSaturationPicker(prop: ColorPanelPorps) {
     }
   }, []);
 
-  // ColorSaturationPicker
-
   return (
     <div ref={panelRef} className="color-saturation-picker">
       <canvas
@@ -122,8 +120,8 @@ export default function ColorSaturationPicker(prop: ColorPanelPorps) {
       ></canvas>
 
       {position ? (
-        <Pointer
-          ref={pointerRef}
+        <Slider
+          ref={sliderRef}
           onPositionChange={handlePositionChange}
           style={{
             left: position.left,
