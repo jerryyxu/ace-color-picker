@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 
-import Pointer from '../pointer';
+import Pointer from '../components/pointer';
 
 import './index.css';
 

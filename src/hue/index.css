@@ -1,4 +1,5 @@
 .color-hue-picker {
+  position: relative;
   width: 100%;
   height: 12px;
   border-radius: 6px;

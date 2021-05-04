@@ -1,0 +1,6 @@
+.ace-color-picker {
+  width: 200px;
+  height: 200px;
+  display: grid;
+  row-gap: 20px;
+}

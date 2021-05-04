@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import tinycolor from 'tinycolor2';
-import { minmax } from '../../utils';
+import { minmax } from '../utils';
 
-import Pointer from '../pointer';
+import Pointer from '../components/pointer';
 
 import './index.css';
 
