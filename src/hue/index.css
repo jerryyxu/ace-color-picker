@@ -1,3 +1,5 @@
+@import '../index.css';
+
 .color-hue-picker {
   position: relative;
   width: 100%;

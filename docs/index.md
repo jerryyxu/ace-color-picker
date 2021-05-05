@@ -10,9 +10,10 @@ export default function() {
   const [color, setColor] = useState('');
 
   return (
-    <div style={{ width: 100 }}>
-      <SliderControl onChange={console.log} />
+    <div style={{ width: 200 }}>
       <ColorPicker defaultValue={color} onChange={console.log} />
+      <br />
+      <SliderControl addible defaultValue={[0, 100]} onChange={console.log} />
     </div>
   );
 }

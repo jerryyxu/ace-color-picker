@@ -98,7 +98,7 @@ export default function ColorSaturationPicker(prop: ColorPanelPorps) {
   }
 
   function handleMouseDown(e: React.MouseEvent) {
-    sliderRef.current.handleMouseDown(e);
+    sliderRef.current.startMove(e);
   }
 
   useEffect(() => {

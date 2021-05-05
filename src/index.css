@@ -1,18 +1,13 @@
-.color-slider {
-  position: absolute;
-  transition: left 50ms ease-out, top 50ms ease-out;
-}
-
-.color-slider__pointer {
+.color-hue-picker .pointer,
+.color-alpha-picker .pointer {
   display: block;
   box-sizing: border-box;
   width: 12px;
   height: 12px;
   border-radius: 6px;
-  border-style: solid;
-  border-width: 2px;
-  background: #efefef;
+  border: 2px solid #333;
   box-shadow: rgb(0 0 0 / 20%) 0px 0px 0px 0.6px;
   position: relative;
+  cursor: auto;
   cursor: initial;
 }

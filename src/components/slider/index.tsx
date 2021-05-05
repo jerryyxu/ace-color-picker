@@ -1,8 +1,8 @@
 import React, {
+  useImperativeHandle,
   useEffect,
   useState,
   forwardRef,
-  useImperativeHandle,
 } from 'react';
 
 import { requestAF, endEvent } from '../../utils';
@@ -10,7 +10,8 @@ import { requestAF, endEvent } from '../../utils';
 import './index.css';
 
 function Slider(props: SliderProps, ref: React.Ref<any>) {
-  const { onPositionChange, style, ...restProps } = props;
+  const { onPositionChange, style, color, children, ...restProps } = props;
+
   const [willChange, setWillChange] = useState<boolean>(false);
 
   function unbindEventListeners() {
@@ -20,7 +21,7 @@ function Slider(props: SliderProps, ref: React.Ref<any>) {
 
   // -------- event handle
 
-  function handleMouseDown(e: React.MouseEvent) {
+  function startMove(e: React.MouseEvent) {
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseup', handleMouseUp);
 
@@ -51,16 +52,18 @@ function Slider(props: SliderProps, ref: React.Ref<any>) {
   }, []);
 
   useImperativeHandle(ref, () => ({
-    handleMouseDown,
+    startMove,
   }));
 
   return (
     <div
-      onMouseDown={handleMouseDown}
+      onMouseDown={startMove}
       className="color-slider"
-      style={{ ...style, willChange: willChange ? 'left, right' : undefined }}
+      style={{ ...style, willChange: willChange ? 'left, top' : undefined }}
       {...restProps}
-    ></div>
+    >
+      {children}
+    </div>
   );
 }
 
@@ -68,6 +71,8 @@ interface SliderProps {
   style?: Object;
   onPositionChange?: (e: MouseEvent | React.MouseEvent) => void;
   ref?: React.Ref<any>;
+  children?: React.ReactNode;
+  color?: string;
 }
 
 export default forwardRef(Slider);

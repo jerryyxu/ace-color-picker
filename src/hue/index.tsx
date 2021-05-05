@@ -14,7 +14,8 @@ export default function ColorHuePicker({
     tinycolor(defaultValue).toHsv(),
   );
 
-  function handlePositionChange(v: number) {
+  // @ts-ignore
+  function handlePositionChange(v) {
     const h = Math.round((360 * v) / 100);
 
     setColor({
@@ -24,12 +25,18 @@ export default function ColorHuePicker({
     onChange && onChange(h);
   }
 
+  const cssColor = tinycolor(color).toRgbString();
+
   return (
-    <SliderControl
-      className="color-hue-picker"
-      onChange={handlePositionChange}
-      sliderStyle={{ background: tinycolor(color).toRgbString() }}
-    />
+    <div className="color-hue-picker">
+      <SliderControl
+        className="color-hue-picker"
+        onChange={handlePositionChange}
+        renderSlider={
+          <div style={{ background: cssColor }} className="pointer"></div>
+        }
+      />
+    </div>
   );
 }
 

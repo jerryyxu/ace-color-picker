@@ -14,7 +14,8 @@ export default function ColorAlphaPicker({
     tinycolor(defaultValue).toHsv(),
   );
 
-  function handlePositionChange(v: number) {
+  // @ts-ignore
+  function handleChange(v) {
     const a = 1 - v / 100;
 
     const c = {
@@ -27,17 +28,21 @@ export default function ColorAlphaPicker({
     onChange && onChange(color);
   }
 
-  const startColor = tinycolor({ ...color, a: 1 }).toRgbString();
-  const endColor = tinycolor({ ...color, a: 0 }).toRgbString();
+  const tc = tinycolor(color);
+  const startColor = tc.setAlpha(1).toRgbString();
+  const endColor = tc.setAlpha(0).toRgbString();
+  const bgColor = tc.toRgbString();
 
   return (
     <div className="color-alpha-picker">
       <SliderControl
-        onChange={handlePositionChange}
-        sliderStyle={{ background: tinycolor(color).toRgbString() }}
+        onChange={handleChange}
         style={{
           background: `linear-gradient(to right, ${startColor} 0%, ${endColor} 100%)`,
         }}
+        renderSlider={
+          <div style={{ background: bgColor }} className="pointer"></div>
+        }
       />
     </div>
   );
