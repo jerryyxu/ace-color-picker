@@ -1,10 +1,10 @@
 .color-slider {
   position: absolute;
   transition: left 50ms ease-out, top 50ms ease-out;
+  cursor: default;
 }
 
 .color-slider__pointer {
-  display: block;
   box-sizing: border-box;
   width: 12px;
   height: 12px;
@@ -14,5 +14,4 @@
   background: #efefef;
   box-shadow: rgb(0 0 0 / 20%) 0px 0px 0px 0.6px;
   position: relative;
-  cursor: initial;
 }

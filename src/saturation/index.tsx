@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import tinycolor from 'tinycolor2';
+import tinycolor, { ColorFormats } from 'tinycolor2';
 import { minmax } from '../utils';
 
 import Slider from '../components/slider';
@@ -37,19 +37,15 @@ function drawCanvas(canvas: HTMLCanvasElement) {
   }
 }
 
-type Color = {
-  h: number;
-  s: number;
-  v: number;
-  a: number;
-};
-
 type Position = {
   top: number;
   left: number;
 };
 
-function computePosition(hsla: Color, pickerContainer: HTMLElement) {
+function computePosition(
+  hsla: ColorFormats.HSVA,
+  pickerContainer: HTMLElement,
+) {
   const { height, width } = pickerContainer.getBoundingClientRect();
   const { s, v } = hsla;
 
@@ -65,7 +61,7 @@ export default function ColorSaturationPicker(prop: ColorPanelPorps) {
   const panelRef = useRef<HTMLDivElement>(null);
   const sliderRef = useRef<any>(null);
 
-  const [color, setColor] = useState<Color>({
+  const [color, setColor] = useState<ColorFormats.HSVA>({
     h: 289,
     s: 0,
     v: 0,
@@ -126,10 +122,14 @@ export default function ColorSaturationPicker(prop: ColorPanelPorps) {
           style={{
             left: position.left,
             top: position.top,
-            background: tinycolor(color).toRgbString(),
             transform: 'translate(-50%, -50%)',
           }}
-        />
+        >
+          <div
+            style={{ background: tinycolor(color).toRgbString() }}
+            className="pointer"
+          ></div>
+        </Slider>
       ) : null}
     </div>
   );

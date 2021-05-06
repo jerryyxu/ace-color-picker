@@ -6,12 +6,14 @@ import './index.css';
 type SliderControlProps = {
   min?: number;
   max?: number;
-  defaultValue?: number;
+  defaultValue?: number | number[];
   onChange?: (v: number | number[], curVal?: number, curIdx?: number) => void;
   className?: string;
   sliderStyle?: object;
   style?: object;
-  renderSlider?: React.ReactNode;
+  renderSlider?:
+    | ((value: number, index?: number) => React.ReactNode)
+    | React.ReactNode;
   addible?: boolean;
 };
 
@@ -127,7 +129,9 @@ export default function SliderControl({
               ...sliderStyle,
             }}
           >
-            {renderSlider || <span className="color-slider__pointer"></span>}
+            {typeof renderSlider === 'function'
+              ? renderSlider(v, idx)
+              : renderSlider}
           </Slider>
         );
       })}

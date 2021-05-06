@@ -28,10 +28,10 @@ export default function ColorAlphaPicker({
     onChange && onChange(color);
   }
 
-  const tc = tinycolor(color);
-  const startColor = tc.setAlpha(1).toRgbString();
-  const endColor = tc.setAlpha(0).toRgbString();
-  const bgColor = tc.toRgbString();
+  const c = tinycolor(color);
+  const bgColor = c.toRgbString();
+  const startColor = c.setAlpha(1).toRgbString();
+  const endColor = c.setAlpha(0).toRgbString();
 
   return (
     <div className="color-alpha-picker">

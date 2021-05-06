@@ -10,7 +10,13 @@ import { requestAF, endEvent } from '../../utils';
 import './index.css';
 
 function Slider(props: SliderProps, ref: React.Ref<any>) {
-  const { onPositionChange, style, color, children, ...restProps } = props;
+  const {
+    onPositionChange,
+    style,
+    color,
+    children = <span className="color-slider__pointer"></span>,
+    ...restProps
+  } = props;
 
   const [willChange, setWillChange] = useState<boolean>(false);
 

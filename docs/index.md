@@ -2,18 +2,26 @@
 
 ```tsx
 import React, { useState } from 'react';
-import { ColorPicker } from 'ace-color-picker';
+import { ColorPicker, GradientPoints } from 'ace-color-picker';
 
 import SliderControl from '../src/components/slider-control';
 
 export default function() {
-  const [color, setColor] = useState('');
+  const colorArr = [
+    {
+      color: 'red',
+      stop: 10,
+    },
+    {
+      color: 'black',
+      stop: 100,
+    },
+  ];
 
   return (
-    <div style={{ width: 200 }}>
-      <ColorPicker defaultValue={color} onChange={console.log} />
+    <div style={{ width: 400 }}>
+      <GradientPoints defaultValue={colorArr} onChange={console.log} />
       <br />
-      <SliderControl addible defaultValue={[0, 100]} onChange={console.log} />
     </div>
   );
 }
