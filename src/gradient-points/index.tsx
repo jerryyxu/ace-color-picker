@@ -24,12 +24,12 @@ export default function({ onChange, defaultValue = [] }: GradientPointsProps) {
 
   const stopValue = value.map(v => v.stop);
 
-  function handleChange(_, curVal, idx) {
+  function handleChange(_: number[], curVal: number, idx: number) {
     value[idx].stop = Math.round(curVal);
 
     setValue([...value]);
 
-    console.log(value);
+    onChange && onChange(_, curVal, idx);
   }
 
   return (

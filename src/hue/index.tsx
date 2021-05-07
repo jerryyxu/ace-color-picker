@@ -32,6 +32,7 @@ export default function ColorHuePicker({
       <SliderControl
         className="color-hue-picker"
         onChange={handlePositionChange}
+        defaultValue={(color.h * 100) / 360}
         renderSlider={
           <div style={{ background: cssColor }} className="pointer"></div>
         }
