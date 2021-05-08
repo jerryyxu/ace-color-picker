@@ -32,3 +32,7 @@ export function minmax(v: number, min: number, max: number): number {
 
   return v;
 }
+
+export function isUdf(v: any) {
+  return v === undefined;
+}

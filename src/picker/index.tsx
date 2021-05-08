@@ -22,7 +22,7 @@ function getGradientCss(v: GradientValue[]) {
 
 const colorArr = [
   {
-    color: '#22c1c3',
+    color: '#2228c3',
     stop: 0,
   },
   {
@@ -36,22 +36,26 @@ export default function ColorPicker(props: ColorPickerProps) {
     tinycolor(colorArr[0].color).toHsv(),
   );
 
-  console.log(tinycolor(colorArr[0].color).toHsv());
+  function handleColorChange(c) {
+    console.log(c);
+    setCurColor(c);
+  }
 
   return (
     <div className="ace-color-picker">
       <div style={{ height: 100, width: 200 }}></div>
-      <GradientPoints defaultValue={colorArr} />
-      {/* <ColorSaturationPicker defaultValue={curColor} /> */}
-      <ColorHuePicker defaultValue={curColor} />
-      <ColorAlphaPicker defaultValue={curColor} />
+      {/* <GradientPoints defaultValue={colorArr} /> */}
+      <ColorSaturationPicker value={curColor} onChange={handleColorChange} />
+      <ColorHuePicker value={curColor} onChange={handleColorChange} />
+      <ColorAlphaPicker value={curColor} onChange={handleColorChange} />
 
-      {colorArr.map((v, idx) => (
-        <div
-          key={idx}
-          style={{ height: 40, width: 40, background: v.color }}
-        ></div>
-      ))}
+      <div
+        style={{
+          height: 40,
+          width: 40,
+          background: tinycolor(curColor).toRgbString(),
+        }}
+      ></div>
     </div>
   );
 }

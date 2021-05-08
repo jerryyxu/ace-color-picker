@@ -6,69 +6,75 @@ import Slider from '../components/slider';
 
 import './index.css';
 
-function drawCanvas(canvas: HTMLCanvasElement) {
+type Position = {
+  top: string;
+  left: string;
+};
+
+interface ColorPanelPorps {
+  onChange?: (color: ColorFormats.HSVA) => void;
+  defaultValue?: ColorFormats.HSVA;
+  value?: ColorFormats.HSVA;
+}
+
+function drawCanvas(canvas: HTMLCanvasElement, color: string) {
   const ctx = canvas.getContext('2d');
   const { width, height } = canvas.getBoundingClientRect();
 
   canvas.width = width;
   canvas.height = height;
 
-  if (ctx) {
-    ctx.fillStyle = 'rgb(210, 0, 255)';
-    ctx.fillRect(0, 0, width, height);
-
-    const lg0 = ctx.createLinearGradient(0, 0, width, 0);
-
-    lg0.addColorStop(0, '#fff');
-    lg0.addColorStop(1, 'rgba(255,255,255,0)');
-
-    ctx.fillStyle = lg0;
-
-    ctx.fillRect(0, 0, width, height);
-
-    const lg = ctx.createLinearGradient(0, 0, 0, height);
-
-    lg.addColorStop(0, 'transparent');
-    lg.addColorStop(1, '#000');
-
-    ctx.fillStyle = lg;
-
-    ctx.fillRect(0, 0, width, height);
+  if (!ctx) {
+    return;
   }
+
+  ctx.clearRect(0, 0, width, height);
+
+  ctx.fillStyle = color;
+  ctx.fillRect(0, 0, width, height);
+
+  // 亮度
+  let lineGradient = ctx.createLinearGradient(0, 0, width, 0);
+
+  lineGradient.addColorStop(0, '#fff');
+  lineGradient.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.fillStyle = lineGradient;
+  ctx.fillRect(0, 0, width, height);
+
+  // 透明度
+  lineGradient = ctx.createLinearGradient(0, 0, 0, height);
+
+  lineGradient.addColorStop(0, 'transparent');
+  lineGradient.addColorStop(1, '#000');
+  ctx.fillStyle = lineGradient;
+  ctx.fillRect(0, 0, width, height);
 }
 
-type Position = {
-  top: number;
-  left: number;
-};
-
-function computePosition(
-  hsla: ColorFormats.HSVA,
-  pickerContainer: HTMLElement,
-) {
-  const { height, width } = pickerContainer.getBoundingClientRect();
+function computePosition(hsla: ColorFormats.HSVA): Position {
   const { s, v } = hsla;
 
-  const left = Math.round((s / 100) * width);
-  const top = Math.round(height - (v / 100) * height);
+  const left = `${s * 100}%`;
+  const top = `${(1 - v) * 100}%`;
 
   return { left, top };
 }
 
 // 颜色饱和度和明度选择器
-export default function ColorSaturationPicker(prop: ColorPanelPorps) {
+export default function ColorSaturationPicker({
+  onChange,
+  defaultValue = {
+    h: 360,
+    s: 0,
+    v: 0,
+    a: 1,
+  },
+  value,
+}: ColorPanelPorps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const sliderRef = useRef<any>(null);
 
-  const [color, setColor] = useState<ColorFormats.HSVA>({
-    h: 289,
-    s: 0,
-    v: 0,
-    a: 1,
-  });
-
-  const [position, setPosition] = useState<Position | null>(null);
+  const [color, setColor] = useState<ColorFormats.HSVA>(value || defaultValue);
 
   function handlePositionChange(e: MouseEvent | React.MouseEvent) {
     if (!panelRef.current) {
@@ -78,34 +84,45 @@ export default function ColorSaturationPicker(prop: ColorPanelPorps) {
     const { clientX, clientY } = e;
     const { x, y, height, width } = panelRef.current?.getBoundingClientRect();
 
-    let left = minmax(clientX - x, 0, width);
-    let top = minmax(clientY - y, 0, height);
+    const left = minmax(clientX - x, 0, width);
+    const top = minmax(clientY - y, 0, height);
 
-    setPosition({
-      left,
-      top,
-    });
-
-    setColor({
+    const _color = {
       ...color,
-      s: Math.round((left * 100) / width) / 100,
-      v: Math.round(((height - top) * 100) / height) / 100,
-    });
+      s: left / width,
+      v: 1 - top / height,
+    };
+
+    value || setColor(_color);
+    onChange && onChange(_color);
   }
 
   function handleMouseDown(e: React.MouseEvent) {
     sliderRef.current.startMove(e);
   }
 
-  useEffect(() => {
-    if (canvasRef.current) {
-      drawCanvas(canvasRef.current);
-    }
+  function drawPanel({ v, s, h }: ColorFormats.HSVA) {
+    canvasRef.current &&
+      drawCanvas(canvasRef.current, tinycolor({ s, v, h, a: 1 }).toRgbString());
+  }
 
-    if (panelRef.current) {
-      setPosition(computePosition(color, panelRef.current));
-    }
+  useEffect(() => {
+    drawPanel(color);
   }, []);
+
+  useEffect(() => {
+    if (
+      value &&
+      // @ts-ignore
+      ['a', 'h'].some(k => value[k] !== color[k])
+    ) {
+      drawPanel(value);
+
+      setColor(value);
+    }
+  }, [value]);
+
+  const _color = value || color;
 
   return (
     <div ref={panelRef} className="color-saturation-picker">
@@ -114,27 +131,15 @@ export default function ColorSaturationPicker(prop: ColorPanelPorps) {
         ref={canvasRef}
         className="picker__canvas"
       ></canvas>
-
-      {position ? (
-        <Slider
-          ref={sliderRef}
-          onPositionChange={handlePositionChange}
-          style={{
-            left: position.left,
-            top: position.top,
-            transform: 'translate(-50%, -50%)',
-          }}
-        >
-          <div
-            style={{ background: tinycolor(color).toRgbString() }}
-            className="pointer"
-          ></div>
-        </Slider>
-      ) : null}
+      <Slider
+        ref={sliderRef}
+        onPositionChange={handlePositionChange}
+        style={{
+          ...computePosition(_color),
+          transform: 'translate(-50%, -50%)',
+          background: tinycolor(_color).toRgbString(),
+        }}
+      />
     </div>
   );
-}
-
-interface ColorPanelPorps {
-  onChange?: (color: string) => void;
 }
