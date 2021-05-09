@@ -42,9 +42,14 @@ export default function SliderControl({
   const [val, setVal] = useState<number[]>(toArray(defaultValue));
   const [curIdx, setCurIdx] = useState<number>(0);
 
-  const valueRef = useRef<number[]>(val);
+  const valueRef = useRef<number[]>(getValue());
 
-  function computeValue(e: MouseEvent | React.MouseEvent) {
+  function getValue() {
+    return isUdf(value) ? val : toArray(value);
+  }
+
+  // 根据鼠标事件计算当前值
+  function calcValByMouse(e: MouseEvent | React.MouseEvent) {
     const react = ctrRef.current?.getBoundingClientRect();
 
     if (!react) {
@@ -64,7 +69,7 @@ export default function SliderControl({
   }
 
   function handlePositionChange(e: MouseEvent | React.MouseEvent, idx: number) {
-    const v = computeValue(e);
+    const v = calcValByMouse(e);
 
     if (v === undefined) {
       return;
@@ -93,30 +98,27 @@ export default function SliderControl({
     return `${((v - min) * 100) / (max - min)}%`;
   }
 
-  function getValue() {
-    return isUdf(value) ? val : toArray(value);
-  }
-
   function handleMouseDown(e: React.MouseEvent) {
-    if (addible) {
-      const v = computeValue(e);
-
-      if (v === undefined) {
-        return;
-      }
-
-      const newValue = [...getValue(), v];
-      const idx = newValue.length - 1;
-
-      if (isUdf(value)) {
-        setVal(newValue);
-        setCurIdx(idx);
-      }
-
-      onChange && onChange(newValue, newValue[idx], idx);
-    } else {
+    if (!addible) {
       sliderRef.current[curIdx]?.startMove(e);
+      return;
     }
+
+    const v = calcValByMouse(e);
+
+    if (v === undefined) {
+      return;
+    }
+
+    const newValue = [...getValue(), v];
+    const idx = newValue.length - 1;
+
+    if (isUdf(value)) {
+      setVal(newValue);
+      setCurIdx(idx);
+    }
+
+    onChange && onChange(newValue, newValue[idx], idx);
   }
 
   let classname = clsx([

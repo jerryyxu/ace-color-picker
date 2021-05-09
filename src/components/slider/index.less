@@ -3,6 +3,13 @@
   transition: left 50ms ease-out, top 50ms ease-out;
   cursor: default;
   border-radius: 50%;
+
+  &:hover,
+  &.is-active {
+    .color-slider__pointer {
+      transform: scale(1.2);
+    }
+  }
 }
 
 .color-slider__pointer {
@@ -14,14 +21,15 @@
   border-width: 2px;
   border-radius: 50%;
   position: relative;
-}
+  transition: 150ms;
 
-.color-slider__pointer::before {
-  content: '';
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  position: absolute;
-  border: 2px solid #fff;
-  box-sizing: border-box;
+  &::before {
+    content: '';
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    position: absolute;
+    border: 2px solid #fff;
+    box-sizing: border-box;
+  }
 }

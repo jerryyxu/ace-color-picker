@@ -6,8 +6,9 @@ import React, {
 } from 'react';
 
 import { requestAF, endEvent } from '../../utils';
+import clsx from 'clsx';
 
-import './index.css';
+import './index.less';
 
 function Slider(props: SliderProps, ref: React.Ref<any>) {
   const {
@@ -61,10 +62,12 @@ function Slider(props: SliderProps, ref: React.Ref<any>) {
     startMove,
   }));
 
+  const classname = clsx('color-slider', { 'is-active': willChange });
+
   return (
     <div
       onMouseDown={startMove}
-      className="color-slider"
+      className={classname}
       style={{ ...style, willChange: willChange ? 'left, top' : undefined }}
       {...restProps}
     >
