@@ -1,5 +1,4 @@
 import React, { useState, useMemo } from 'react';
-import tinycolor from 'tinycolor2';
 import SliderControl from '../components/slider-control';
 import { clacGradientColor } from '../utils';
 

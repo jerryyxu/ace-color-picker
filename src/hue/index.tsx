@@ -51,7 +51,7 @@ export default function ColorHuePicker({
       <SliderControl
         className="color-hue-picker"
         onChange={handlePositionChange}
-        defaultValue={(_color.h * 100) / 360}
+        value={(_color.h * 100) / 360}
         sliderStyle={{
           background: cssColor,
         }}

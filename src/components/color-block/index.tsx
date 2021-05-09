@@ -10,6 +10,7 @@ export type ColorBlockProps = {
   className?: string;
   size?: number | string;
   style?: object;
+  onClick?: (event: React.MouseEvent) => void;
 };
 
 export default function ColorBlock({
@@ -19,6 +20,7 @@ export default function ColorBlock({
   isCircle = false,
   size,
   style,
+  ...rest
 }: ColorBlockProps) {
   const cls = clsx(className, 'color-block', {
     'is-active': isActive,
@@ -26,7 +28,11 @@ export default function ColorBlock({
   });
 
   return (
-    <div style={{ width: size, height: size, ...style }} className={cls}>
+    <div
+      style={{ width: size, height: size, ...style }}
+      className={cls}
+      {...rest}
+    >
       <div style={{ background: color }}></div>
     </div>
   );
