@@ -66,7 +66,8 @@ export function clacGradientColor(
 
   const rgb: ColorFormats.RGB = { r: -1, g: -1, b: -1 };
 
-  const radio = stop / (list[end].stop - list[begin].stop || 100);
+  const radio =
+    (stop - list[begin].stop) / (list[end].stop - list[begin].stop || 100);
 
   const [beginRgb, endRgb] = [begin, end].map(i =>
     tinycolor(list[i].color).toRgb(),

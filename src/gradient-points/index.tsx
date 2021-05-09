@@ -28,6 +28,8 @@ export default function({ onChange, defaultValue = [] }: GradientPointsProps) {
   function handleChange(_: number[], curVal: number, idx: number) {
     const newValue = [...value];
 
+    curVal = Math.round(curVal);
+
     // 新增
     if (idx >= value.length) {
       const color = clacGradientColor(value, curVal);
@@ -38,8 +40,10 @@ export default function({ onChange, defaultValue = [] }: GradientPointsProps) {
           stop: curVal,
         });
     } else {
-      newValue[idx].stop = Math.round(curVal);
+      newValue[idx].stop = curVal;
     }
+
+    console.log(newValue);
 
     setValue(newValue);
     onChange && onChange(_, curVal, idx);
