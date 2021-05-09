@@ -1,6 +1,4 @@
-export type hsvaColor = {
-  h: number;
-  s: number;
-  v: number;
-  a: number;
+type ColorStopValue = {
+  color: string;
+  stop: number;
 };

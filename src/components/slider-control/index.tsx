@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react';
+import clsx from 'clsx';
 import { isUdf } from '../../utils';
 import Slider from '../slider';
 
@@ -19,6 +20,10 @@ type SliderControlProps = {
   addible?: boolean;
 };
 
+function toArray(v: any) {
+  return Array.isArray(v) ? v : [v];
+}
+
 export default function SliderControl({
   min = 0,
   max = 100,
@@ -34,10 +39,7 @@ export default function SliderControl({
   const ctrRef = useRef<HTMLDivElement>(null);
   const sliderRef = useRef<any>([]);
 
-  const defaultVal = value === undefined ? defaultValue : value;
-  const [val, setVal] = useState<number[]>(
-    Array.isArray(defaultVal) ? defaultVal : [defaultVal],
-  );
+  const [val, setVal] = useState<number[]>(toArray(defaultValue));
   const [curIdx, setCurIdx] = useState<number>(0);
 
   const valueRef = useRef<number[]>(val);
@@ -76,12 +78,12 @@ export default function SliderControl({
       isUdf(value) && setVal([...valueRef.current]);
 
       if (onChange) {
-        const _values = valueRef.current;
+        const _value = valueRef.current;
 
-        if (_values.length < 2) {
-          onChange(_values[0]);
+        if (_value.length < 2) {
+          onChange(_value[0]);
         } else {
-          onChange(_values, _values[idx], idx);
+          onChange(_value, _value[idx], idx);
         }
       }
     }
@@ -89,6 +91,10 @@ export default function SliderControl({
 
   function value2Left(v: number): string {
     return `${((v - min) * 100) / (max - min)}%`;
+  }
+
+  function getValue() {
+    return isUdf(value) ? val : toArray(value);
   }
 
   function handleMouseDown(e: React.MouseEvent) {
@@ -99,22 +105,27 @@ export default function SliderControl({
         return;
       }
 
-      const _value = [...val, v];
+      const newValue = [...getValue(), v];
+      const idx = newValue.length - 1;
 
       if (isUdf(value)) {
-        setVal(_value);
-        setCurIdx(_value.length);
+        setVal(newValue);
+        setCurIdx(idx);
       }
+
+      onChange && onChange(newValue, newValue[idx], idx);
     } else {
       sliderRef.current[curIdx]?.startMove(e);
     }
   }
 
-  let classname = `${className} slider-control`;
+  let classname = clsx([
+    className,
+    'slider-control',
+    { 'slider-control--addible': addible },
+  ]);
 
-  if (addible) {
-    classname += ' slider-control--addible';
-  }
+  const curValue = getValue();
 
   return (
     <div
@@ -123,7 +134,7 @@ export default function SliderControl({
       className={classname}
       style={style}
     >
-      {val.map((v, idx) => {
+      {curValue.map((v, idx) => {
         return (
           <Slider
             key={idx}

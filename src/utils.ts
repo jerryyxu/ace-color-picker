@@ -1,3 +1,5 @@
+import tinycolor, { ColorFormats } from 'tinycolor2';
+
 // stopPropagation && preventDefault
 export function endEvent(e: Event | React.MouseEvent) {
   e.stopPropagation();
@@ -35,4 +37,45 @@ export function minmax(v: number, min: number, max: number): number {
 
 export function isUdf(v: any) {
   return v === undefined;
+}
+
+// 计算渐变色 相对位置 stop 处的颜色值
+export function clacGradientColor(
+  colorStopList: ColorStopValue[],
+  stop: number,
+) {
+  if (colorStopList.length < 1) {
+    return;
+  }
+
+  let begin = 0;
+  let end = 0;
+
+  const list = [...colorStopList].sort((x, y) => x.stop - y.stop);
+
+  for (let i = 0; i < list.length; i++) {
+    const c = list[i];
+
+    if (c.stop < stop) {
+      begin = i;
+    } else if (c.stop > stop) {
+      end = i;
+      break;
+    }
+  }
+
+  const rgb: ColorFormats.RGB = { r: -1, g: -1, b: -1 };
+
+  const radio = stop / (list[end].stop - list[begin].stop || 100);
+
+  const [beginRgb, endRgb] = [begin, end].map(i =>
+    tinycolor(list[i].color).toRgb(),
+  );
+
+  ['r', 'g', 'b'].map(
+    // @ts-ignore
+    n => (rgb[n] = beginRgb[n] * (1 - radio) + endRgb[n] * radio),
+  );
+
+  return tinycolor(rgb).toHexString();
 }

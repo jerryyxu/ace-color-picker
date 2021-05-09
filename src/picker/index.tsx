@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import ColorHuePicker from '../hue';
 import ColorAlphaPicker from '../alpha';
 import ColorSaturationPicker from '../saturation';
+import ColorBlock from '../components/color-block';
 import GradientPoints from '../gradient-points';
 import tinycolor from 'tinycolor2';
 
@@ -22,11 +23,11 @@ function getGradientCss(v: GradientValue[]) {
 
 const colorArr = [
   {
-    color: '#2228c3',
+    color: '#a722c3',
     stop: 0,
   },
   {
-    color: '#fdbb2d',
+    color: '#75b535',
     stop: 100,
   },
 ];
@@ -41,21 +42,19 @@ export default function ColorPicker(props: ColorPickerProps) {
     setCurColor(c);
   }
 
+  // function handleColorChange2(e) {
+
+  // }
+
   return (
     <div className="ace-color-picker">
       <div style={{ height: 100, width: 200 }}></div>
-      {/* <GradientPoints defaultValue={colorArr} /> */}
+      <GradientPoints defaultValue={colorArr} />
       <ColorSaturationPicker value={curColor} onChange={handleColorChange} />
       <ColorHuePicker value={curColor} onChange={handleColorChange} />
       <ColorAlphaPicker value={curColor} onChange={handleColorChange} />
 
-      <div
-        style={{
-          height: 40,
-          width: 40,
-          background: tinycolor(curColor).toRgbString(),
-        }}
-      ></div>
+      <ColorBlock color={tinycolor(curColor).toRgbString()} />
     </div>
   );
 }

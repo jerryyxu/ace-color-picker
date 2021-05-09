@@ -1,17 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
+import tinycolor from 'tinycolor2';
 import SliderControl from '../components/slider-control';
+import { clacGradientColor } from '../utils';
 
-type GradientValue = {
+type ColorStopValue = {
   color: string;
   stop: number;
 };
 
 type GradientPointsProps = {
   onChange?: (value: number[], curVal?: number, curIdx?: number) => void;
-  defaultValue?: GradientValue[];
+  defaultValue?: ColorStopValue[];
 };
 
-function getGradientCss(v: GradientValue[]) {
+function getGradientCss(v: ColorStopValue[]) {
+  v = [...v];
   v.sort((x, y) => x.stop - y.stop);
 
   const c = v.map(({ color, stop }) => `${color} ${stop}%`).join(', ');
@@ -20,35 +23,47 @@ function getGradientCss(v: GradientValue[]) {
 }
 
 export default function({ onChange, defaultValue = [] }: GradientPointsProps) {
-  const [value, setValue] = useState<GradientValue[]>(defaultValue);
-
-  const stopValue = value.map(v => v.stop);
+  const [value, setValue] = useState<ColorStopValue[]>(defaultValue);
 
   function handleChange(_: number[], curVal: number, idx: number) {
-    value[idx].stop = Math.round(curVal);
+    const newValue = [...value];
 
-    setValue([...value]);
+    // 新增
+    if (idx >= value.length) {
+      const color = clacGradientColor(value, curVal);
 
+      color &&
+        newValue.push({
+          color,
+          stop: curVal,
+        });
+    } else {
+      newValue[idx].stop = Math.round(curVal);
+    }
+
+    setValue(newValue);
     onChange && onChange(_, curVal, idx);
+  }
+
+  function renderSlider(_: number, idx: number) {
+    return (
+      <span
+        // @ts-ignore
+        style={{ background: value[idx].color }}
+        className="color-slider__pointer"
+      ></span>
+    );
   }
 
   return (
     <div className="color-gradient-points">
       <SliderControl
         style={{ background: getGradientCss(value) }}
-        defaultValue={stopValue}
+        value={value.map(v => v.stop)}
         addible
-        /* @ts-ignore */
+        // @ts-ignore
         onChange={handleChange}
-        renderSlider={(v, idx) => {
-          v = Math.round(v);
-
-          return (
-            <div key={idx}>
-              <span>{v}</span>
-            </div>
-          );
-        }}
+        renderSlider={renderSlider}
       />
     </div>
   );
