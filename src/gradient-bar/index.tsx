@@ -1,5 +1,4 @@
 import React, { useState, useMemo } from 'react';
-import tinycolor from 'tinycolor2';
 import SliderControl from '../components/slider-control';
 import { clacGradientColor } from '../utils';
 
@@ -43,8 +42,6 @@ export default function({ onChange, defaultValue = [] }: GradientPointsProps) {
       newValue[idx].stop = curVal;
     }
 
-    console.log(newValue);
-
     setValue(newValue);
     onChange && onChange(_, curVal, idx);
   }
@@ -60,7 +57,7 @@ export default function({ onChange, defaultValue = [] }: GradientPointsProps) {
   }
 
   return (
-    <div className="color-gradient-points">
+    <div className="color-gradient-bar">
       <SliderControl
         style={{ background: getGradientCss(value) }}
         value={value.map(v => v.stop)}

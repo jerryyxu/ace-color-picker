@@ -3,7 +3,7 @@ import ColorHuePicker from '../hue';
 import ColorAlphaPicker from '../alpha';
 import ColorSaturationPicker from '../saturation';
 import ColorBlock from '../components/color-block';
-import GradientPoints from '../gradient-points';
+import GradientPoints from '../gradient-bar';
 import tinycolor from 'tinycolor2';
 
 import './index.css';
