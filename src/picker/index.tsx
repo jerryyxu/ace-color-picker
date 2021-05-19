@@ -37,8 +37,9 @@ export default function ColorPicker(props: ColorPickerProps) {
     tinycolor(colorArr[0].color).toHsv(),
   );
 
-  function handleColorChange(c) {
-    console.log(c);
+  function handleColorChange(c, ...args: any[]) {
+    console.log(c, args);
+
     setCurColor(c);
   }
 
@@ -49,11 +50,10 @@ export default function ColorPicker(props: ColorPickerProps) {
   return (
     <div className="ace-color-picker">
       <div style={{ height: 100, width: 200 }}></div>
-      <GradientPoints defaultValue={colorArr} />
+      <GradientPoints defaultValue={colorArr} onChange={console.log} />
       <ColorSaturationPicker value={curColor} onChange={handleColorChange} />
       <ColorHuePicker value={curColor} onChange={handleColorChange} />
       <ColorAlphaPicker value={curColor} onChange={handleColorChange} />
-
       <ColorBlock color={tinycolor(curColor).toRgbString()} />
     </div>
   );

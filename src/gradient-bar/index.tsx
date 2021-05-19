@@ -8,7 +8,7 @@ type ColorStopValue = {
 };
 
 type GradientPointsProps = {
-  onChange?: (value: number[], curVal?: number, curIdx?: number) => void;
+  onChange?: (value: number[], curVal: number, curIdx: number) => void;
   defaultValue?: ColorStopValue[];
 };
 
@@ -23,6 +23,7 @@ function getGradientCss(v: ColorStopValue[]) {
 
 export default function({ onChange, defaultValue = [] }: GradientPointsProps) {
   const [value, setValue] = useState<ColorStopValue[]>(defaultValue);
+  const [curIdx, setCurIdx] = useState<number>(0);
 
   function handleChange(_: number[], curVal: number, idx: number) {
     const newValue = [...value];
