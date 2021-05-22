@@ -17,6 +17,7 @@ interface ColorPanelPorps {
   value?: ColorFormats.HSVA;
 }
 
+// 色板绘制
 function drawCanvas(canvas: HTMLCanvasElement, color: string) {
   const ctx = canvas.getContext('2d');
   const { width, height } = canvas.getBoundingClientRect();
@@ -50,6 +51,7 @@ function drawCanvas(canvas: HTMLCanvasElement, color: string) {
   ctx.fillRect(0, 0, width, height);
 }
 
+// 通过颜色计算位置
 function computePosition(hsla: ColorFormats.HSVA): Position {
   const { s, v } = hsla;
 
@@ -102,8 +104,9 @@ export default function ColorSaturationPicker({
   }
 
   function drawPanel({ v, s, h }: ColorFormats.HSVA) {
-    canvasRef.current &&
+    if (canvasRef.current) {
       drawCanvas(canvasRef.current, tinycolor({ s, v, h, a: 1 }).toRgbString());
+    }
   }
 
   useEffect(() => {
@@ -117,7 +120,6 @@ export default function ColorSaturationPicker({
       ['a', 'h'].some(k => value[k] !== color[k])
     ) {
       drawPanel(value);
-
       setColor(value);
     }
   }, [value]);

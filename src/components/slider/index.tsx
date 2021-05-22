@@ -5,23 +5,33 @@ import React, {
   forwardRef,
 } from 'react';
 
-import { requestAF, endEvent } from '../../utils';
+import { requestAF, endEvent, invoke } from '../../utils';
 import clsx from 'clsx';
 
 import './index.less';
+
+interface SliderProps {
+  style?: Object;
+  onPositionChange?: (e: MouseEvent | React.MouseEvent) => void;
+  ref?: React.Ref<any>;
+  children?: React.ReactNode;
+  color?: string;
+  onStartMove?: (e: MouseEvent | React.MouseEvent) => void;
+}
 
 function Slider(props: SliderProps, ref: React.Ref<any>) {
   const {
     onPositionChange,
     style,
     color,
+    onStartMove,
     children = <span className="color-slider__pointer"></span>,
     ...restProps
   } = props;
 
   const [willChange, setWillChange] = useState<boolean>(false);
 
-  function unbindEventListeners() {
+  function removeListener() {
     window.removeEventListener('mousemove', handleMouseMove);
     window.removeEventListener('mouseup', handleMouseUp);
   }
@@ -33,27 +43,25 @@ function Slider(props: SliderProps, ref: React.Ref<any>) {
     window.addEventListener('mouseup', handleMouseUp);
 
     setWillChange(true);
-    onPositionChange && onPositionChange(e);
-
+    invoke(onStartMove, e);
+    invoke(onPositionChange, e);
     endEvent(e);
   }
 
   function handleMouseUp(e: MouseEvent) {
-    unbindEventListeners();
+    removeListener();
     setWillChange(false);
-
     endEvent(e);
   }
 
   const handleMouseMove = requestAF((e: MouseEvent) => {
-    onPositionChange && onPositionChange(e);
-
+    invoke(onPositionChange, e);
     endEvent(e);
   });
 
   useEffect(() => {
     return () => {
-      unbindEventListeners();
+      removeListener();
       setWillChange(false);
     };
   }, []);
@@ -74,14 +82,6 @@ function Slider(props: SliderProps, ref: React.Ref<any>) {
       {children}
     </div>
   );
-}
-
-interface SliderProps {
-  style?: Object;
-  onPositionChange?: (e: MouseEvent | React.MouseEvent) => void;
-  ref?: React.Ref<any>;
-  children?: React.ReactNode;
-  color?: string;
 }
 
 export default forwardRef(Slider);

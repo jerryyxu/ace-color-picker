@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import tinycolor from 'tinycolor2';
+
 import ColorHuePicker from '../hue';
 import ColorAlphaPicker from '../alpha';
 import ColorSaturationPicker from '../saturation';
 import ColorBlock from '../components/color-block';
-import GradientPoints from '../gradient-points';
-import tinycolor from 'tinycolor2';
+import GradientBar from '../components/gradient-bar';
+import AngleDial from '../components/angle-dial';
 
 import './index.css';
 
@@ -25,8 +27,9 @@ export default function ColorPicker(props: ColorPickerProps) {
     tinycolor(gradientColor[curIdx].color).toHsv(),
   );
 
-  function handleColorChange(c) {
-    console.log(c);
+  function handleColorChange(c, ...args: any[]) {
+    console.log(c, args);
+
     setCurColor(c);
 
     gradientColor[curIdx].color = tinycolor(c).toRgbString();
@@ -36,21 +39,12 @@ export default function ColorPicker(props: ColorPickerProps) {
   return (
     <div className="ace-color-picker">
       <div style={{ height: 100, width: 200 }}></div>
-      <GradientPoints defaultValue={gradientColor} />
+      {/* <GradientBar defaultValue={colorArr} onChange={console.log} /> */}
       <ColorSaturationPicker value={curColor} onChange={handleColorChange} />
       <ColorHuePicker value={curColor} onChange={handleColorChange} />
       <ColorAlphaPicker value={curColor} onChange={handleColorChange} />
-
-      {gradientColor.map(({ color }, idx) => (
-        <ColorBlock
-          isActive={idx === curIdx}
-          onClick={() => {
-            setCurIdx(idx);
-            handleColorChange(tinycolor(color).toHsv());
-          }}
-          color={color}
-        />
-      ))}
+      <ColorBlock color={tinycolor(curColor).toRgbString()} />
+      <AngleDial />
     </div>
   );
 }

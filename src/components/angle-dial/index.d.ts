@@ -1,0 +1,3 @@
+type AngleDialProps = {
+  value: number;
+};

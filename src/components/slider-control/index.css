@@ -3,9 +3,5 @@
   width: 100%;
   height: 12px;
   background: #efefef;
-  border-radius: 6px;
+  border-radius: 2px;
 }
-
-/* .slider-control--addible {
-  cursor: url(../../../public/add.svg) 8 8, auto;
-} */

@@ -35,10 +35,6 @@ export function minmax(v: number, min: number, max: number): number {
   return v;
 }
 
-export function isUdf(v: any) {
-  return v === undefined;
-}
-
 // 计算渐变色 相对位置 stop 处的颜色值
 export function clacGradientColor(
   colorStopList: ColorStopValue[],
@@ -79,4 +75,9 @@ export function clacGradientColor(
   );
 
   return tinycolor(rgb).toHexString();
+}
+
+// 函数调用
+export function invoke(func: any, ...args: any[]) {
+  return func && typeof func === 'function' && func.apply(null, args);
 }

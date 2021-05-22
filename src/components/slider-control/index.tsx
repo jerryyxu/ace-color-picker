@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import clsx from 'clsx';
-import { isUdf } from '../../utils';
+import { invoke } from '../../utils';
 import Slider from '../slider';
 
 import './index.css';
@@ -14,10 +14,10 @@ type SliderControlProps = {
   className?: string;
   sliderStyle?: object;
   style?: object;
+  addible?: boolean;
   renderSlider?:
     | ((value: number, index?: number) => React.ReactNode)
     | React.ReactNode;
-  addible?: boolean;
 };
 
 function toArray(v: any) {
@@ -45,7 +45,11 @@ export default function SliderControl({
   const valueRef = useRef<number[]>(getValue());
 
   function getValue() {
-    return isUdf(value) ? val : toArray(value);
+    return value === undefined ? val : toArray(value);
+  }
+
+  function value2Left(v: number): string {
+    return `${((v - min) * 100) / (max - min)}%`;
   }
 
   // 根据鼠标事件计算当前值
@@ -68,6 +72,24 @@ export default function SliderControl({
     return ((max - min) * lt) / width + min;
   }
 
+  // 新增节点
+  function addPoint(e: React.MouseEvent) {
+    const v = calcValByMouse(e);
+    if (v === undefined) {
+      return;
+    }
+
+    const newValue = [...getValue(), v];
+    const idx = newValue.length - 1;
+
+    if (value === undefined) {
+      setVal(newValue);
+      setCurIdx(idx);
+    }
+
+    invoke(onChange, newValue, newValue[idx], idx);
+  }
+
   function handlePositionChange(e: MouseEvent | React.MouseEvent, idx: number) {
     const v = calcValByMouse(e);
 
@@ -75,12 +97,10 @@ export default function SliderControl({
       return;
     }
 
-    setCurIdx(idx);
-
     if (valueRef.current[idx] !== v) {
       valueRef.current[idx] = v;
 
-      isUdf(value) && setVal([...valueRef.current]);
+      value === undefined && setVal([...valueRef.current]);
 
       if (onChange) {
         const _value = valueRef.current;
@@ -94,31 +114,14 @@ export default function SliderControl({
     }
   }
 
-  function value2Left(v: number): string {
-    return `${((v - min) * 100) / (max - min)}%`;
-  }
-
   function handleMouseDown(e: React.MouseEvent) {
+    // 不可新增模式下
     if (!addible) {
       sliderRef.current[curIdx]?.startMove(e);
       return;
     }
 
-    const v = calcValByMouse(e);
-
-    if (v === undefined) {
-      return;
-    }
-
-    const newValue = [...getValue(), v];
-    const idx = newValue.length - 1;
-
-    if (isUdf(value)) {
-      setVal(newValue);
-      setCurIdx(idx);
-    }
-
-    onChange && onChange(newValue, newValue[idx], idx);
+    addPoint(e);
   }
 
   let classname = clsx([
@@ -142,6 +145,7 @@ export default function SliderControl({
             key={idx}
             ref={el => (sliderRef.current[idx] = el)}
             onPositionChange={e => handlePositionChange(e, idx)}
+            onStartMove={() => setCurIdx(idx)}
             style={{
               top: '50%',
               transform: 'translate(-50%, -50%)',
