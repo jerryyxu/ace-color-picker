@@ -4,7 +4,12 @@ import { requestAF, endEvent, invoke } from '../../utils';
 import './index.d.ts';
 import './index.less';
 
-export default function AngleDial() {
+type AngleDialProps = {
+  value?: number;
+  onChange?: (value: number) => void;
+};
+
+export default function AngleDial({ value, onChange }: AngleDialProps) {
   const dialRef = useRef<HTMLDivElement>(null);
   const [deg, setDeg] = useState(0);
 
@@ -33,11 +38,16 @@ export default function AngleDial() {
       const { x, y } = getCenterCoord(dialRef.current);
       const { clientX, clientY } = e;
 
-      setDeg(
+      const newDeg =
         (360 -
           Math.round(Math.atan2(x - clientX, y - clientY) * 180) / Math.PI) %
-          360,
-      );
+        360;
+
+      invoke(onChange, newDeg);
+
+      if (value !== undefined) {
+        setDeg(newDeg);
+      }
     }
 
     endEvent(e);
@@ -55,8 +65,9 @@ export default function AngleDial() {
     };
   }, []);
 
+  const _deg = value === undefined ? deg : value;
   const style = {
-    transform: `translateZ(0) rotate(${deg}deg)`,
+    transform: `translateZ(0) rotate(${_deg}deg)`,
   };
 
   return (
