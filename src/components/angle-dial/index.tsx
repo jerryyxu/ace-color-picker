@@ -13,7 +13,6 @@ export default function AngleDial({ value, onChange }: AngleDialProps) {
   const dialRef = useRef<HTMLDivElement>(null);
   const [deg, setDeg] = useState(0);
 
-  // translateZ(0) rotate(337deg)
   function removeListener() {
     window.removeEventListener('mousemove', handleMouseMove);
     window.removeEventListener('mouseup', handleMouseUp);
@@ -40,7 +39,7 @@ export default function AngleDial({ value, onChange }: AngleDialProps) {
 
       const newDeg =
         (360 -
-          Math.round(Math.atan2(x - clientX, y - clientY) * 180) / Math.PI) %
+          Math.round((Math.atan2(x - clientX, y - clientY) * 180) / Math.PI)) %
         360;
 
       invoke(onChange, newDeg);

@@ -1,4 +1,9 @@
-import React, { useRef, useState } from 'react';
+import React, {
+  useRef,
+  useState,
+  forwardRef,
+  useImperativeHandle,
+} from 'react';
 import clsx from 'clsx';
 import { invoke } from '../../utils';
 import Slider from '../slider';
@@ -24,18 +29,21 @@ function toArray(v: any) {
   return Array.isArray(v) ? v : [v];
 }
 
-export default function SliderControl({
-  min = 0,
-  max = 100,
-  defaultValue = 0,
-  value,
-  sliderStyle,
-  className = '',
-  style,
-  renderSlider,
-  onChange,
-  addible = false,
-}: SliderControlProps) {
+function SliderControl(
+  {
+    min = 0,
+    max = 100,
+    value,
+    style,
+    className = '',
+    defaultValue = 0,
+    addible = false,
+    sliderStyle,
+    renderSlider,
+    onChange,
+  }: SliderControlProps,
+  ref: React.Ref<any>,
+) {
   const ctrRef = useRef<HTMLDivElement>(null);
   const sliderRef = useRef<any>([]);
 
@@ -124,6 +132,10 @@ export default function SliderControl({
     addPoint(e);
   }
 
+  useImperativeHandle(ref, () => {
+    setCurrentIdx: (idx: number) => setCurIdx(idx);
+  });
+
   let classname = clsx([
     className,
     'slider-control',
@@ -143,6 +155,7 @@ export default function SliderControl({
         return (
           <Slider
             key={idx}
+            className={clsx({ 'is-focus': idx === curIdx })}
             ref={el => (sliderRef.current[idx] = el)}
             onPositionChange={e => handlePositionChange(e, idx)}
             onStartMove={() => setCurIdx(idx)}
@@ -162,3 +175,5 @@ export default function SliderControl({
     </div>
   );
 }
+
+export default forwardRef(SliderControl);

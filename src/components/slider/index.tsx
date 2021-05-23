@@ -1,8 +1,8 @@
 import React, {
-  useImperativeHandle,
   useEffect,
   useState,
   forwardRef,
+  useImperativeHandle,
 } from 'react';
 
 import { requestAF, endEvent, invoke } from '../../utils';
@@ -12,23 +12,24 @@ import './index.less';
 
 interface SliderProps {
   style?: Object;
-  onPositionChange?: (e: MouseEvent | React.MouseEvent) => void;
   ref?: React.Ref<any>;
   children?: React.ReactNode;
-  color?: string;
+  className?: string;
   onStartMove?: (e: MouseEvent | React.MouseEvent) => void;
+  onPositionChange?: (e: MouseEvent | React.MouseEvent) => void;
 }
 
-function Slider(props: SliderProps, ref: React.Ref<any>) {
-  const {
-    onPositionChange,
+function Slider(
+  {
     style,
-    color,
+    className,
     onStartMove,
+    onPositionChange,
     children = <span className="color-slider__pointer"></span>,
     ...restProps
-  } = props;
-
+  }: SliderProps,
+  ref: React.Ref<any>,
+) {
   const [willChange, setWillChange] = useState<boolean>(false);
 
   function removeListener() {
@@ -70,7 +71,9 @@ function Slider(props: SliderProps, ref: React.Ref<any>) {
     startMove,
   }));
 
-  const classname = clsx('color-slider', { 'is-active': willChange });
+  const classname = clsx(className, 'color-slider', {
+    'is-active': willChange,
+  });
 
   return (
     <div

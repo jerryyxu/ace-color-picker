@@ -2,28 +2,32 @@ import React, { useState } from 'react';
 import SliderControl from '../slider-control';
 import { clacGradientColor } from '../../utils';
 
-type ColorStopValue = {
+type ColorStop = {
   color: string;
-  stop: number;
+  stop: string;
 };
 
-type GradientPointsProps = {
+type GradientBarProps = {
+  defaultValue?: ColorStop[];
+  value?: ColorStop[];
+  currentIndex?: Number;
   onChange?: (value: number[], curVal: number, curIdx: number) => void;
-  defaultValue?: ColorStopValue[];
 };
 
-function getGradientCss(v: ColorStopValue[]) {
+function getGradientCss(v: ColorStop[]) {
   v = [...v];
-  v.sort((x, y) => x.stop - y.stop);
+  v.sort((x, y) => parseFloat(x.stop) - parseFloat(y.stop));
 
-  const c = v.map(({ color, stop }) => `${color} ${stop}%`).join(', ');
+  const c = v.map(({ color, stop }) => `${color} ${stop}`).join(', ');
 
   return `linear-gradient(90deg, ${c})`;
 }
 
-export default function({ onChange, defaultValue = [] }: GradientPointsProps) {
-  const [value, setValue] = useState<ColorStopValue[]>(defaultValue);
-  const [curIdx, setCurIdx] = useState<number>(0);
+export default function GradientBar({
+  onChange,
+  defaultValue = [],
+}: GradientBarProps) {
+  const [value, setValue] = useState<ColorStop[]>(defaultValue);
 
   function handleChange(_: number[], curVal: number, idx: number) {
     const newValue = [...value];
@@ -37,7 +41,7 @@ export default function({ onChange, defaultValue = [] }: GradientPointsProps) {
       color &&
         newValue.push({
           color,
-          stop: curVal,
+          stop: `${curVal}%`,
         });
     } else {
       newValue[idx].stop = curVal;
@@ -61,7 +65,7 @@ export default function({ onChange, defaultValue = [] }: GradientPointsProps) {
     <div className="color-gradient-bar">
       <SliderControl
         style={{ background: getGradientCss(value) }}
-        value={value.map(v => v.stop)}
+        value={value.map(v => parseFloat(v.stop))}
         addible
         // @ts-ignore
         onChange={handleChange}

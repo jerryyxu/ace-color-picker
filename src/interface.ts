@@ -1,4 +1,4 @@
-type ColorStopValue = {
+type ColorStop = {
   color: string;
-  stop: number;
+  stop: string;
 };

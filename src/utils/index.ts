@@ -36,10 +36,7 @@ export function minmax(v: number, min: number, max: number): number {
 }
 
 // 计算渐变色 相对位置 stop 处的颜色值
-export function clacGradientColor(
-  colorStopList: ColorStopValue[],
-  stop: number,
-) {
+export function clacGradientColor(colorStopList: ColorStop[], stop: number) {
   if (colorStopList.length < 1) {
     return;
   }
@@ -80,4 +77,69 @@ export function clacGradientColor(
 // 函数调用
 export function invoke(func: any, ...args: any[]) {
   return func && typeof func === 'function' && func.apply(null, args);
+}
+
+/**
+ * 解析渐变色值
+ * @param  color 渐变色值
+ * @example linear-gradient(150deg, rgba(117,17,184,1) 5%, rgba(72,120,60,1) 30%, rgba(72,120,60,1));
+ * @return 渐变色数据对象
+ */
+export function resolveGradientColor(color: string) {
+  function _split(str: string, separator: string | RegExp): string[] {
+    const result: string[] = [];
+
+    let cstr = [];
+    let bracketFlag = false;
+
+    for (let i = 0; i < str.length; i++) {
+      const c = str.charAt(i);
+
+      if (c.match(separator) && !bracketFlag) {
+        result.push(cstr.join('').trim());
+        cstr = [];
+      } else {
+        if (c === '(') {
+          bracketFlag = true;
+        } else if (c === ')') {
+          bracketFlag = false;
+        }
+
+        cstr.push(c);
+      }
+    }
+    cstr.length && result.push(cstr.join('').trim());
+
+    return result;
+  }
+
+  const re = /^([a-z]+)-gradient\((.+)\)$/;
+  const matches = re.exec(color.trim());
+
+  if (!matches) {
+    return null;
+  }
+
+  const result: any = {};
+
+  const [_, functionType, args] = matches;
+
+  result.functionType = functionType;
+
+  let argArr = _split(args, ',');
+
+  // 只支持 deg 单位
+  if (argArr[0].match('deg')) {
+    result.angle = argArr[0];
+    argArr.splice(0, 1);
+  }
+
+  // 不允许 忽略 stop 值
+  result.colorStopList = argArr.map(cs => {
+    const [color, stop] = _split(cs, /\s+/);
+
+    return { color, stop };
+  });
+
+  return result;
 }
